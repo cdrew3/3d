@@ -1,5 +1,5 @@
-CC=gcc
-CFLAGS=-I.
+CC=g++
+CFLAGS=-I. -std=c++11
 LDFLAGS=-l glut -l GL -l GLU -l stdc++
 
 # Triangle
@@ -21,6 +21,9 @@ triangle: $(TRIANGLE_INPUT)
 sphere: $(INPUT)
 	 $(CC) -o $(SPHERE_BINARY) $(SPHERE_INPUT) $(LDFLAGS) $(CFLAGS)
 
+spherec: $(INPUT)
+	 $(CC) -o $(SPHEREC_BINARY) $(SPHEREC_INPUT) $(LDFLAGS) $(CFLAGS)
+
 .PHONY: clean_triangle
 clean_triangle:
 	rm -rf $(TRIANGLE_BINARY)
@@ -28,6 +31,10 @@ clean_triangle:
 .PHONY: clean_sphere
 clean_sphere:
 	rm -rf $(SPHERE_BINARY)
+
+.PHONY: clean_spherec
+clean_spherec:
+	rm -rf $(SPHEREC_BINARY)
 
 .PHONY: clean
 clean:
