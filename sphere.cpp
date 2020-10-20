@@ -22,26 +22,56 @@ int prev_mouse_x, prev_mouse_y, dx, dy;
 vector<int> xarr;
 vector<int> yarr;
 high_resolution_clock::time_point time_old;
+double theta;
+int MAXARRSIZE = 10;
 
-void redisplayFunc(void) {
+double getAngle() {
+    
+    if (xarr.size() != MAXARRSIZE) return 0.0;
 
-    glMatrixMode(GL_MODELVIEW);
-    glClear(GL_COLOR_BUFFER_BIT);
-    glLoadIdentity();
-    glTranslatef(0.0,0.0,-8.0);
-    glColor3f(0.2, 0.8, 0.1);
-    gluLookAt(1.0,1.0,1.0,0.0,0.0,0.0,0.0,0.0,1.0);
-    glRotatef(xRotated,1.0,0.0,0.0);
-    glRotatef(yRotated,0.0,1.0,0.0);
-    glRotatef(zRotated,0.0,0.0,1.0);
-    glScalef(1.0,1.0,1.0);
-    glutSolidSphere(radius,20,20);
-    glFlush();
+    int x1 = xarr.back();
+    int y1 = yarr.back();
+
+    int x2 = xarr.front();
+    int y2 = yarr.front();
+
+    double angle = atan2(y1 - y2, x1 - x2) * 180/PI;
+    return angle;
+}
+
+void printArr(std::string head, vector<int> arr) {
+
+    printf("%s: ", head.c_str());
+    for (int i = 0; i < arr.size(); i++) {
+        if (i == arr.size() - 1) printf("%i\n", arr[i]);
+        else {
+            printf("%i,", arr[i]);
+        }
+    }
+}
+
+void updateArr(int x, int y) {
+
+    if (xarr.size() < MAXARRSIZE) {
+        xarr.push_back(x);
+        yarr.push_back(y);
+        return;
+    }
+
+    if (xarr.size() == MAXARRSIZE) {
+
+        xarr.erase(xarr.begin());
+        yarr.erase(yarr.begin());
+        xarr.push_back(x);
+        yarr.push_back(y);
+    }
+}
+
+void drawAxes(void) {
 
     // x
     glColor3f(1.0,0.0,0.0); // red x
     glBegin(GL_LINES);
-
     glVertex3f(-4.0, 0.0f, 0.0f);
     glVertex3f(4.0, 0.0f, 0.0f);
     glEnd();
@@ -62,6 +92,25 @@ void redisplayFunc(void) {
     glVertex3f(0.0, 0.0f ,4.0f );
     glEnd();
     glFlush();
+}
+
+void redisplayFunc(void) {
+
+    glMatrixMode(GL_MODELVIEW);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glLoadIdentity();
+    glTranslatef(0.0,0.0,-8.0);
+    glColor3f(0.2, 0.8, 0.1);
+    gluLookAt(1.0,1.0,1.0,0.0,0.0,0.0,0.0,0.0,1.0);
+    glRotatef(xRotated,1.0,0.0,0.0);
+    glRotatef(yRotated,0.0,1.0,0.0);
+    glRotatef(zRotated,0.0,0.0,1.0);
+    glScalef(1.0,1.0,1.0);
+    glutSolidSphere(radius,20,20);
+    glFlush();
+
+    drawAxes();
+
 }
 
 void reshapeFunc(int x, int y)
@@ -95,12 +144,13 @@ void look(int x, int y) {
     high_resolution_clock::time_point time_new = high_resolution_clock::now();
     duration<double, std::milli> dur = time_new - time_old;
 
-    cout << dur.count() << " milliseconds diff\n";
-
-    int delta_x = x - prev_mouse_x;
-    int delta_y = y - prev_mouse_y;
-    //int delta_z = x - prev_mouse_x;
-
+    //cout << dur.count() << " milliseconds diff\n";
+    updateArr(x, y);
+    printArr("X", xarr);
+    printArr("Y", yarr);
+    double angle = getAngle();
+    if (abs(angle) > 30) xRotated += 1;
+    if (abs(angle) > 60) yRotated += 1;
     //float angle_delta = atan2(abs(y - prev_mouse_y),abs(x - prev_mouse_x)) * 180/PI; 
 
     prev_mouse_x = x;
@@ -132,8 +182,9 @@ int main (int argc, char **argv)
     glutReshapeFunc(reshapeFunc);
     glutMotionFunc(look);
     glutKeyboardFunc(keyboardFunc);
-    //glutIdleFunc(idleFunc);
+    glutIdleFunc(idleFunc);
     glutMainLoop();
+
     return 0;
 }
 
