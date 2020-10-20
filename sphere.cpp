@@ -36,6 +36,7 @@ double getAngle() {
     int y2 = yarr.front();
 
     double angle = atan2(y1 - y2, x1 - x2) * 180/PI;
+    printf("Angle: %f\n", angle);
     return angle;
 }
 
@@ -149,9 +150,8 @@ void look(int x, int y) {
     printArr("X", xarr);
     printArr("Y", yarr);
     double angle = getAngle();
-    if (abs(angle) > 30) xRotated += 1;
+    if (abs(angle) > 30 || abs(angle) > 150) xRotated += 1;
     if (abs(angle) > 60) yRotated += 1;
-    //float angle_delta = atan2(abs(y - prev_mouse_y),abs(x - prev_mouse_x)) * 180/PI; 
 
     prev_mouse_x = x;
     prev_mouse_y = y;
