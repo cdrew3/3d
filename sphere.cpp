@@ -171,17 +171,6 @@ void keyboardFunc(unsigned char key, int x, int y) {
 
 }
 
-void keyboardUpFunc(unsigned char key, int x, int y) {
-
-    switch(key) {
-
-        case 'x': rotx = 0.0; break;
-        case 'y': roty = 0.0; break;
-        case 'z': rotz = 0.0; break;
-        break;
-    };
-}
-
 int main (int argc, char **argv)
 {
     rotx = roty = rotz = 0.0;
@@ -196,7 +185,6 @@ int main (int argc, char **argv)
     glutIgnoreKeyRepeat(1);
     glutReshapeFunc(reshapeFunc);
     glutKeyboardFunc(keyboardFunc);
-    //glutKeyboardUpFunc(keyboardUpFunc);
     glutMainLoop();
 
     return 0;
