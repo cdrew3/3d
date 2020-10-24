@@ -10,19 +10,23 @@ TRIANGLE_INPUT=triangle.cpp
 SPHERE_BINARY=sphere
 SPHERE_INPUT=sphere.cpp
 
-# All
-BINARIES=$(TRIANGLE_BINARY) $(SPHERE_BINARY)
+# Sphere_basic
+SPHERE_BASIC_BINARY=sphere_basic
+SPHERE_BASIC_INPUT=sphere_basic.cpp
 
-all: triangle sphere
+# All
+BINARIES=$(TRIANGLE_BINARY) $(SPHERE_BINARY) $(SPHERE_BASIC_BINARY)
+
+all: triangle sphere sphere_basic
 
 triangle: $(TRIANGLE_INPUT)
 	 $(CC) -o $(TRIANGLE_BINARY) $(TRIANGLE_INPUT) $(LDFLAGS) $(CFLAGS)
 
-sphere: $(INPUT)
+sphere: $(SPHERE_INPUT)
 	 $(CC) -o $(SPHERE_BINARY) $(SPHERE_INPUT) $(LDFLAGS) $(CFLAGS)
 
-spherec: $(INPUT)
-	 $(CC) -o $(SPHEREC_BINARY) $(SPHEREC_INPUT) $(LDFLAGS) $(CFLAGS)
+sphere_basic: $(SPHERE_BASIC_INPUT)
+	 $(CC) -o $(SPHERE_BASIC_BINARY) $(SPHERE_BASIC_INPUT) $(LDFLAGS) $(CFLAGS)
 
 .PHONY: clean_triangle
 clean_triangle:
@@ -33,8 +37,8 @@ clean_sphere:
 	rm -rf $(SPHERE_BINARY)
 
 .PHONY: clean_spherec
-clean_spherec:
-	rm -rf $(SPHEREC_BINARY)
+clean_sphere_basic:
+	rm -rf $(SPHERE_BASIC_BINARY)
 
 .PHONY: clean
 clean:

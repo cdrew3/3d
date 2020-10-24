@@ -23,6 +23,9 @@ vector<int> xarr;
 vector<int> yarr;
 double theta;
 int MAXARRSIZE = 5;
+bool first_display = true;
+int i = 0;
+float CT[16];
 
 double getAngle() {
     
@@ -102,12 +105,11 @@ void redisplayFunc(void) {
     glTranslatef(0.0,0.0,-8.0);
     gluLookAt(1.0,1.0,1.0,0.0,0.0,0.0,0.0,0.0,1.0);
     glColor3f(0.2, 0.8, 0.1);
+    glScalef(1.0,1.0,1.0);
     glRotatef(xRotated,rotx,0.0,0.0);
     glRotatef(yRotated,0.0,roty,0.0);
     glRotatef(zRotated,0.0,0.0,rotz);
-    glScalef(1.0,1.0,1.0);
     glutSolidSphere(radius,20,20);
-    glFlush();
 
     drawAxes();
 }
@@ -124,10 +126,12 @@ void reshapeFunc(int x, int y)
 
 void idleFunc(void)
 {
-    //printf("---\nX: %f\nY: %f\nZ: %f\n", xRotated, yRotated, zRotated);
+    redisplayFunc();
 }
 
 void look(int x, int y) {
+
+    if (rotx == 0.0 and roty == 0.0 and rotz == 0.0) { return; }
 
     if (is_first_time) {
         prev_mouse_x = x;
@@ -161,14 +165,41 @@ void keyboardFunc(unsigned char key, int x, int y) {
 
     switch(key) {
 
-        case 'r': xRotated = yRotated = zRotated = 0; redisplayFunc(); break;
+        case 'r':
+            xRotated = yRotated = zRotated = 0;
+            rotx = roty = rotz = 0.0;
+            redisplayFunc();
+            break;
         case 'd': redisplayFunc(); break;
-        case 'x': if (rotx == 0.0) rotx = 1.0; else rotx = 0.0; break;
-        case 'y': if (roty == 0.0) roty = 1.0; else roty = 0.0; break;
-        case 'z': if (rotz == 0.0) rotz = 1.0; else rotz = 0.0; break;
+        case 'x':
+            if (rotx == 0.0) {
+                rotx = 1.0;
+                roty = 0.0;
+                rotz = 0.0;
+            } else {
+                rotx = 0.0;
+            }
+            break;
+        case 'y':
+            if (roty == 0.0) {
+                rotx = 0.0;
+                roty = 1.0;
+                rotz = 0.0;
+            } else {
+                roty = 0.0;
+            }
+            break;
+        case 'z':
+            if (rotz == 0.0) {
+                rotx = 0.0;
+                roty = 0.0;
+                rotz = 1.0;
+            } else {
+                rotz = 0.0;
+            }
+            break;
         break;
     };
-
 }
 
 int main (int argc, char **argv)
@@ -181,10 +212,12 @@ int main (int argc, char **argv)
     glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
     glClearColor(0.0,0.0,0.0,0.0);
     glutMotionFunc(look);
+    glutPassiveMotionFunc(NULL);
     glutDisplayFunc(redisplayFunc);
     glutIgnoreKeyRepeat(1);
     glutReshapeFunc(reshapeFunc);
     glutKeyboardFunc(keyboardFunc);
+    glutMouseFunc(NULL);
     glutMainLoop();
 
     return 0;
