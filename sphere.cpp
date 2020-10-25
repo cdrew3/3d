@@ -26,6 +26,8 @@ int MAXARRSIZE = 5;
 bool first_display = true;
 int i = 0;
 float CT[16];
+bool MOUSE_DOWN;
+GLfloat xStart, yStart;
 
 double getAngle() {
     
@@ -131,34 +133,65 @@ void idleFunc(void)
 
 void look(int x, int y) {
 
-    if (rotx == 0.0 and roty == 0.0 and rotz == 0.0) { return; }
+    if ((rotx == 0.0 and roty == 0.0 and rotz == 0.0) || ! MOUSE_DOWN) { return; }
 
-    if (is_first_time) {
+    /*if (is_first_time) {
         prev_mouse_x = x;
         prev_mouse_y = y;
         is_first_time = false;
         return;
-    }
+    }*/
 
-    int delta_x = x - prev_mouse_x;
-    int delta_y = y - prev_mouse_y;
+    int delta_x = x - xStart;
+    int delta_y = y - yStart;
     updateArr(x, y);
 
     int dx = abs(xarr.back() - xarr.front());
     int dy = abs(yarr.back() - yarr.front());
     if (dx - dy > 3) {
-        xRotated += delta_x;
-        yRotated += delta_x;
-        zRotated += delta_x;
+        if (rotx) xRotated += delta_x;
+        if (roty) yRotated += delta_x;
+        if (rotz) zRotated += delta_x;
     } else if (dy - dx > 3) {
-        xRotated += delta_y;
-        yRotated += delta_y;
-        zRotated += delta_y;
+        if (rotx) xRotated += delta_y;
+        if (roty) yRotated += delta_y;
+        if (rotz) zRotated += delta_y;
     }
 
-    prev_mouse_x = x;
-    prev_mouse_y = y;
-    redisplayFunc();
+    float uX = 
+    printf("%f,%f,%f\n", xRotated, yRotated, zRotated);
+    xStart = x;
+    yStart = y;
+    glMatrixMode(GL_MODELVIEW);
+    glLoadMatrixf(CT);
+    glRotatef(xRotated, rotx, roty, rotz);
+    glGetFloatv(GL_MODELVIEW_MATRIX, CT);
+    glutPostRedisplay();
+}
+
+void mouseFunc(int button, int state, int x, int y) {
+
+    if(button == GLUT_LEFT_BUTTON) {
+
+        if(state == GLUT_DOWN) {
+            xStart = x;
+            yStart = y;
+            MOUSE_DOWN = true;
+        }
+        else if(state == GLUT_UP) {
+            MOUSE_DOWN = false;
+
+            /*// Compute the new transformation matrix
+            glMatrixMode(GL_MODELVIEW); 
+            glLoadMatrixf(CT);
+            glRotated(angle,uX,uY,uZ);
+            glGetFloatv(GL_MODELVIEW_MATRIX,CT);
+            // Draw the picture
+            displayWire();
+            */
+        }
+    }
+
 }
 
 void keyboardFunc(unsigned char key, int x, int y) {
@@ -205,6 +238,7 @@ void keyboardFunc(unsigned char key, int x, int y) {
 int main (int argc, char **argv)
 {
     rotx = roty = rotz = 0.0;
+    xRotated = yRotated = zRotated = 0;
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
     glutInitWindowSize(400,350);
@@ -217,7 +251,8 @@ int main (int argc, char **argv)
     glutIgnoreKeyRepeat(1);
     glutReshapeFunc(reshapeFunc);
     glutKeyboardFunc(keyboardFunc);
-    glutMouseFunc(NULL);
+    glutMouseFunc(mouseFunc);
+    glGetFloatv(GL_MODELVIEW_MATRIX, CT);
     glutMainLoop();
 
     return 0;
